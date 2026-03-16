@@ -1,0 +1,262 @@
+{% extends 'services/base.html' %}
+{% block extra_css %}
+.hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, rgba(26,26,46,0.85) 0%, rgba(0,102,204,0.7) 100%),
+                url('https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1600') center/cover no-repeat;
+    display: flex; align-items: center; padding-top: 80px;
+}
+.hero h1 { font-size: 4rem; font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 20px; }
+.hero h1 span { background: linear-gradient(135deg, #00c9a7, #66d9c7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { font-size: 1.2rem; color: rgba(255,255,255,0.85); max-width: 600px; }
+.hero-badge { display: inline-block; background: rgba(0,201,167,0.2); color: #00c9a7; border: 1px solid rgba(0,201,167,0.4); padding: 8px 20px; border-radius: 25px; font-size: 0.9rem; font-weight: 600; margin-bottom: 20px; }
+.hero-search { background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 30px; margin-top: 40px; }
+.hero-search .form-select, .hero-search .form-control { background: rgba(255,255,255,0.95); border: none; padding: 12px 18px; border-radius: 10px; }
+.hero-stats { display: flex; gap: 40px; margin-top: 40px; }
+.hero-stat-value { font-size: 2rem; font-weight: 800; color: #fff; line-height: 1; }
+.hero-stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.65); }
+.feature-card { background: #fff; border-radius: 16px; padding: 32px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.07); transition: all 0.3s ease; height: 100%; }
+.feature-card:hover { transform: translateY(-6px); box-shadow: 0 15px 35px rgba(0,0,0,0.12); }
+.stats-section { background: var(--gradient); padding: 70px 0; }
+.stat-number { font-size: 3rem; font-weight: 800; color: #fff; }
+.stat-label { font-size: 0.95rem; color: rgba(255,255,255,0.8); font-weight: 500; }
+.testimonial-card { background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); height: 100%; }
+.cta-section { background: linear-gradient(135deg, rgba(26,26,46,0.92) 0%, rgba(0,77,153,0.88) 100%), url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600') center/cover no-repeat; padding: 100px 0; text-align: center; }
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="hero-badge"><i class="fas fa-star me-2"></i>Rated #1 Travel Agency 2024</div>
+                <h1>Discover the World's <span>Hidden Wonders</span> With Us</h1>
+                <p>Expertly crafted travel experiences that go beyond ordinary tourism. Your adventure of a lifetime starts here.</p>
+                <div class="hero-search">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="text-white small mb-1">Where to?</label>
+                            <select class="form-select">
+                                <option>Choose Destination</option>
+                                {% for dest in featured_destinations %}
+                                <option>{{ dest.name }}, {{ dest.country.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-white small mb-1">Travel Date</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-white small mb-1">Travelers</label>
+                            <select class="form-select">
+                                <option>1 Person</option><option>2 People</option>
+                                <option>3-5 People</option><option>6+ People</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{% url 'tours' %}" class="btn btn-primary-custom w-100">
+                            <i class="fas fa-search me-2"></i>Search Available Tours
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-stats">
+                    <div><div class="hero-stat-value">{{ stats.happy_clients }}+</div><div class="hero-stat-label">Happy Clients</div></div>
+                    <div><div class="hero-stat-value">{{ stats.destinations }}+</div><div class="hero-stat-label">Destinations</div></div>
+                    <div><div class="hero-stat-value">{{ stats.guides }}+</div><div class="hero-stat-label">Expert Guides</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 90px 0; background: linear-gradient(135deg, #f0f7ff 0%, #e8f5f3 100%);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-badge">Why Choose Us</div>
+            <h2 class="section-title">Travel Smarter, Experience More</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div style="width:70px;height:70px;border-radius:16px;background:rgba(0,102,204,0.1);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 20px;">
+                        <i class="fas fa-shield-alt" style="color:#0066cc;"></i>
+                    </div>
+                    <h5 class="fw-bold">Safe & Reliable</h5>
+                    <p class="text-muted small">All tours are fully insured and follow the highest safety standards.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div style="width:70px;height:70px;border-radius:16px;background:rgba(0,201,167,0.1);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 20px;">
+                        <i class="fas fa-user-tie" style="color:#00c9a7;"></i>
+                    </div>
+                    <h5 class="fw-bold">Expert Local Guides</h5>
+                    <p class="text-muted small">Our certified guides speak multiple languages and have deep cultural knowledge.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div style="width:70px;height:70px;border-radius:16px;background:rgba(255,107,53,0.1);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 20px;">
+                        <i class="fas fa-tags" style="color:#ff6b35;"></i>
+                    </div>
+                    <h5 class="fw-bold">Best Price Guarantee</h5>
+                    <p class="text-muted small">We match any competitor's price. Get the best value for your dream vacation.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div style="width:70px;height:70px;border-radius:16px;background:rgba(255,215,0,0.1);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 20px;">
+                        <i class="fas fa-headset" style="color:#ffc107;"></i>
+                    </div>
+                    <h5 class="fw-bold">24/7 Support</h5>
+                    <p class="text-muted small">Round-the-clock assistance before, during, and after your trip.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 90px 0; background: #fff;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-3">
+            <div>
+                <div class="section-badge">Top Picks</div>
+                <h2 class="section-title">Featured Destinations</h2>
+            </div>
+            <a href="{% url 'destinations' %}" class="btn btn-outline-custom">View All <i class="fas fa-arrow-right ms-2"></i></a>
+        </div>
+        <div class="row g-4">
+            {% for dest in featured_destinations %}
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-img-wrapper">
+                        <img src="{{ dest.image_url }}" alt="{{ dest.name }}">
+                        <span class="badge-category">{{ dest.country.name }}</span>
+                        <span class="badge-rating"><i class="fas fa-star me-1"></i>{{ dest.rating }}</span>
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-1">{{ dest.name }}</h5>
+                        <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1" style="color:var(--secondary);"></i>{{ dest.country.name }}</p>
+                        <p class="text-muted small">{{ dest.description|truncatewords:18 }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="fw-bold" style="color:var(--primary);font-size:1.2rem;">${{ dest.price_per_day }}<span class="text-muted fw-normal" style="font-size:0.8rem;">/day</span></span>
+                            <a href="{% url 'tours' %}" class="btn btn-primary-custom btn-sm px-3">Explore</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="stats-section">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-2 col-4"><div class="stat-number">{{ stats.happy_clients }}+</div><div class="stat-label">Happy Clients</div></div>
+            <div class="col-md-2 col-4"><div class="stat-number">{{ stats.destinations }}+</div><div class="stat-label">Destinations</div></div>
+            <div class="col-md-2 col-4"><div class="stat-number">{{ stats.tours }}+</div><div class="stat-label">Tour Packages</div></div>
+            <div class="col-md-2 col-4"><div class="stat-number">{{ stats.guides }}+</div><div class="stat-label">Expert Guides</div></div>
+            <div class="col-md-2 col-4"><div class="stat-number">{{ stats.countries }}+</div><div class="stat-label">Countries</div></div>
+            <div class="col-md-2 col-4"><div class="stat-number">{{ stats.years_experience }}+</div><div class="stat-label">Years Experience</div></div>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 90px 0; background: #f8f9fa;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-3">
+            <div>
+                <div class="section-badge">Best Sellers</div>
+                <h2 class="section-title">Popular Tour Packages</h2>
+            </div>
+            <a href="{% url 'tours' %}" class="btn btn-outline-custom">All Packages <i class="fas fa-arrow-right ms-2"></i></a>
+        </div>
+        <div class="row g-4">
+            {% for tour in featured_tours %}
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-img-wrapper">
+                        <img src="{{ tour.destination.image_url }}" alt="{{ tour.title }}">
+                        <span class="badge-category">{{ tour.get_category_display }}</span>
+                        <span class="badge-rating"><i class="fas fa-star me-1"></i>{{ tour.destination.rating }}</span>
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-1">{{ tour.title }}</h5>
+                        <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1" style="color:var(--secondary);"></i>{{ tour.destination.name }}, {{ tour.destination.country.name }}</p>
+                        <div class="d-flex gap-3 mb-3">
+                            <span class="small text-muted"><i class="fas fa-clock me-1" style="color:var(--primary);"></i>{{ tour.duration_days }} days</span>
+                            <span class="small text-muted"><i class="fas fa-users me-1" style="color:var(--primary);"></i>Max {{ tour.max_group_size }}</span>
+                        </div>
+                        <div class="d-flex gap-2 mb-3">
+                            {% if tour.includes_hotel %}<span class="badge" style="background:rgba(0,201,167,0.1);color:#00c9a7;">Hotel</span>{% endif %}
+                            {% if tour.includes_flight %}<span class="badge" style="background:rgba(0,102,204,0.1);color:#0066cc;">Flight</span>{% endif %}
+                            {% if tour.includes_meals %}<span class="badge" style="background:rgba(255,107,53,0.1);color:#ff6b35;">Meals</span>{% endif %}
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold" style="color:var(--primary);font-size:1.3rem;">${{ tour.price }}<span class="text-muted fw-normal" style="font-size:0.8rem;">/person</span></span>
+                            <a href="{% url 'booking' %}" class="btn btn-primary-custom btn-sm">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section style="padding: 90px 0; background: #fff;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-badge">Testimonials</div>
+            <h2 class="section-title">What Our Travelers Say</h2>
+        </div>
+        <div class="row g-4">
+            {% for t in testimonials %}
+            <div class="col-lg-6">
+                <div class="testimonial-card">
+                    <div style="font-size:3rem;color:var(--accent);line-height:1;margin-bottom:10px;">"</div>
+                    <p class="mb-4" style="font-style:italic;color:#444;">{{ t.comment }}</p>
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width:50px;height:50px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;">
+                            {{ t.customer.first_name|first }}{{ t.customer.last_name|first }}
+                        </div>
+                        <div>
+                            <div class="fw-bold">{{ t.customer.first_name }} {{ t.customer.last_name }}</div>
+                            <div class="text-muted small">{{ t.customer.country|default:"Traveler" }}</div>
+                            <div class="stars small">{% for i in "12345" %}★{% endfor %}</div>
+                        </div>
+                        <div class="ms-auto">
+                            <span class="text-muted small">Toured:</span>
+                            <div class="small fw-bold" style="color:var(--primary);">{{ t.tour_package.title }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 text-center">
+                <div class="section-badge">Limited Time Offer</div>
+                <h2 class="section-title text-white mb-4" style="font-size:3rem;">Ready for Your Next Adventure?</h2>
+                <p class="text-white mb-5" style="font-size:1.1rem;opacity:0.85;">Book your dream tour today and get up to 20% off on selected packages!</p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{% url 'booking' %}" class="btn btn-primary-custom px-5 py-3">
+                        <i class="fas fa-calendar-check me-2"></i>Book Your Tour
+                    </a>
+                    <a href="{% url 'tours' %}" class="btn" style="background:rgba(255,255,255,0.15);color:#fff;border:2px solid rgba(255,255,255,0.4);padding:12px 32px;border-radius:30px;font-weight:600;">
+                        <i class="fas fa-compass me-2"></i>Browse Tours
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

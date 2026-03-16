@@ -1,0 +1,51 @@
+{% extends 'services/crud/base_manage.html' %}
+
+{% block manage_content %}
+<div class="table-card">
+    <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+        <h5 class="fw-bold mb-0"><i class="fas fa-star me-2" style="color:var(--primary);"></i>Reviews ({{ items|length }})</h5>
+        <a href="{% url 'review_create' %}" class="btn btn-primary-custom btn-sm">
+            <i class="fas fa-plus me-1"></i> Add Review
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Customer</th>
+                    <th>Tour Package</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td class="text-muted">{{ item.id }}</td>
+                    <td><strong>{{ item.customer }}</strong></td>
+                    <td><small>{{ item.tour_package.title|truncatechars:30 }}</small></td>
+                    <td>
+                        <span style="color:#ffd700;">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= item.rating %}★{% else %}☆{% endif %}
+                            {% endfor %}
+                        </span>
+                    </td>
+                    <td><small class="text-muted">{{ item.comment|truncatechars:50 }}</small></td>
+                    <td><small>{{ item.created_at|date:"d M Y" }}</small></td>
+                    <td>
+                        <a href="{% url 'review_update' item.pk %}" class="btn-action btn-edit">Edit</a>
+                        <a href="{% url 'review_delete' item.pk %}" class="btn-action btn-del ms-1">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center text-muted py-4">No reviews found</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

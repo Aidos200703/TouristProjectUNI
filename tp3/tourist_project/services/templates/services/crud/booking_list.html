@@ -1,0 +1,59 @@
+{% extends 'services/crud/base_manage.html' %}
+
+{% block manage_content %}
+<div class="table-card">
+    <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+        <h5 class="fw-bold mb-0"><i class="fas fa-calendar-check me-2" style="color:var(--primary);"></i>Bookings ({{ items|length }})</h5>
+        <a href="{% url 'booking_create' %}" class="btn btn-primary-custom btn-sm">
+            <i class="fas fa-plus me-1"></i> Add Booking
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Ref</th>
+                    <th>Customer</th>
+                    <th>Tour</th>
+                    <th>Guide</th>
+                    <th>Travel Date</th>
+                    <th>People</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td><strong style="color:var(--primary);">TSB{{ item.id|stringformat:"04d" }}</strong></td>
+                    <td>{{ item.customer }}</td>
+                    <td><small>{{ item.tour_package.title|truncatechars:25 }}</small></td>
+                    <td><small>{{ item.guide|default:"-" }}</small></td>
+                    <td>{{ item.travel_date }}</td>
+                    <td>{{ item.number_of_people }}</td>
+                    <td>${{ item.total_price }}</td>
+                    <td>
+                        {% if item.status == 'confirmed' %}
+                        <span class="badge" style="background:rgba(0,201,167,0.15);color:#00c9a7;">{{ item.status }}</span>
+                        {% elif item.status == 'pending' %}
+                        <span class="badge" style="background:rgba(255,193,7,0.15);color:#ffc107;">{{ item.status }}</span>
+                        {% elif item.status == 'cancelled' %}
+                        <span class="badge" style="background:rgba(220,53,69,0.15);color:#dc3545;">{{ item.status }}</span>
+                        {% else %}
+                        <span class="badge" style="background:rgba(0,102,204,0.15);color:#0066cc;">{{ item.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'booking_update' item.pk %}" class="btn-action btn-edit">Edit</a>
+                        <a href="{% url 'booking_delete' item.pk %}" class="btn-action btn-del ms-1">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="9" class="text-center text-muted py-4">No bookings found</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

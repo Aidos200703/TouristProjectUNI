@@ -1,0 +1,25 @@
+{% extends 'services/crud/base_manage.html' %}
+
+{% block manage_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="table-card p-4 text-center">
+            <div style="width:80px;height:80px;border-radius:50%;background:rgba(220,53,69,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;color:#dc3545;">
+                <i class="fas fa-trash-alt"></i>
+            </div>
+            <h4 class="fw-bold mb-2">{{ title }}</h4>
+            <p class="text-muted mb-4">
+                Are you sure you want to delete <strong>"{{ obj }}"</strong>?
+                <br>This action cannot be undone.
+            </p>
+            <form method="POST" class="d-flex gap-3 justify-content-center">
+                {% csrf_token %}
+                <button type="submit" class="btn px-4" style="background:#dc3545;color:#fff;border-radius:25px;font-weight:600;">
+                    <i class="fas fa-trash me-2"></i>Yes, Delete
+                </button>
+                <a href="{% url back_url %}" class="btn btn-outline-custom px-4">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

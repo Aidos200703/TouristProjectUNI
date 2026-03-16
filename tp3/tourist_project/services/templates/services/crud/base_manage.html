@@ -1,0 +1,93 @@
+{% extends 'services/base.html' %}
+
+{% block extra_css %}
+.manage-hero {
+    padding: 120px 0 50px;
+    background: linear-gradient(135deg, rgba(26,26,46,0.95) 0%, rgba(0,77,153,0.9) 100%),
+                url('https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1600') center/cover no-repeat;
+}
+.manage-nav {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    padding: 20px;
+    margin-bottom: 30px;
+}
+.manage-nav a {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 18px; border-radius: 10px;
+    font-weight: 600; font-size: 0.88rem;
+    text-decoration: none; color: #555;
+    transition: all 0.2s ease;
+    margin: 3px;
+}
+.manage-nav a:hover { background: rgba(0,102,204,0.08); color: var(--primary); }
+.manage-nav a.active { background: var(--gradient); color: #fff; }
+.table-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+.table thead th {
+    background: #f8f9fa;
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #555;
+    border-bottom: 2px solid #eee;
+    padding: 14px 16px;
+}
+.table tbody td { padding: 12px 16px; vertical-align: middle; font-size: 0.9rem; }
+.table tbody tr:hover { background: #f8f9ff; }
+.btn-action {
+    padding: 5px 14px; border-radius: 8px;
+    font-size: 0.8rem; font-weight: 600;
+    text-decoration: none; display: inline-block;
+    transition: all 0.2s;
+}
+.btn-edit { background: rgba(0,102,204,0.1); color: #0066cc; }
+.btn-edit:hover { background: #0066cc; color: #fff; }
+.btn-del { background: rgba(220,53,69,0.1); color: #dc3545; }
+.btn-del:hover { background: #dc3545; color: #fff; }
+{% endblock %}
+
+{% block content %}
+<section class="manage-hero">
+    <div class="container">
+        <h1 class="text-white fw-bold">Management Panel</h1>
+        <p class="text-white opacity-75">Tourist Services System — CRUD Operations</p>
+    </div>
+</section>
+
+<section style="padding: 40px 0; background: #f8f9fa; min-height: 70vh;">
+    <div class="container">
+        <div class="manage-nav">
+            <a href="{% url 'destination_list' %}" class="{% if 'destination' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-map-marker-alt"></i> Destinations
+            </a>
+            <a href="{% url 'tour_list' %}" class="{% if 'tour' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-suitcase"></i> Tours
+            </a>
+            <a href="{% url 'guide_list' %}" class="{% if 'guide' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-user-tie"></i> Guides
+            </a>
+            <a href="{% url 'booking_list' %}" class="{% if 'booking' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-calendar-check"></i> Bookings
+            </a>
+            <a href="{% url 'review_list' %}" class="{% if 'review' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-star"></i> Reviews
+            </a>
+            <a href="{% url 'customer_list' %}" class="{% if 'customer' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-users"></i> Customers
+            </a>
+            <a href="{% url 'home' %}" style="margin-left: auto;">
+                <i class="fas fa-globe"></i> View Site
+            </a>
+        </div>
+
+        {% block manage_content %}{% endblock %}
+    </div>
+</section>
+{% endblock %}

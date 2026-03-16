@@ -1,0 +1,53 @@
+{% extends 'services/crud/base_manage.html' %}
+
+{% block manage_content %}
+<div class="table-card">
+    <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+        <h5 class="fw-bold mb-0"><i class="fas fa-suitcase me-2" style="color:var(--primary);"></i>Tour Packages ({{ items|length }})</h5>
+        <a href="{% url 'tour_create' %}" class="btn btn-primary-custom btn-sm">
+            <i class="fas fa-plus me-1"></i> Add Tour
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Destination</th>
+                    <th>Category</th>
+                    <th>Duration</th>
+                    <th>Price</th>
+                    <th>Available</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td class="text-muted">{{ item.id }}</td>
+                    <td><strong>{{ item.title }}</strong></td>
+                    <td>{{ item.destination.name }}</td>
+                    <td><span class="badge" style="background:rgba(0,102,204,0.1);color:#0066cc;">{{ item.get_category_display }}</span></td>
+                    <td>{{ item.duration_days }} days</td>
+                    <td>${{ item.price }}</td>
+                    <td>
+                        {% if item.is_available %}
+                        <span class="badge" style="background:rgba(0,201,167,0.15);color:#00c9a7;">Yes</span>
+                        {% else %}
+                        <span class="badge" style="background:#f0f0f0;color:#999;">No</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'tour_update' item.pk %}" class="btn-action btn-edit">Edit</a>
+                        <a href="{% url 'tour_delete' item.pk %}" class="btn-action btn-del ms-1">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="text-center text-muted py-4">No tours found</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

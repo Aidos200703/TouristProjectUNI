@@ -1,0 +1,128 @@
+{% extends 'services/base.html' %}
+{% block extra_css %}
+.page-hero { padding: 140px 0 60px; background: linear-gradient(135deg, rgba(26,26,46,0.92) 0%, rgba(0,100,180,0.8) 100%), url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600') center/cover no-repeat; text-align: center; }
+.booking-form-card { background: #fff; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.12); overflow: hidden; }
+.booking-form-header { background: var(--gradient); padding: 30px 35px; }
+.form-control, .form-select { border: 2px solid #eee; border-radius: 12px; padding: 12px 16px; font-size: 0.9rem; transition: border-color 0.3s; }
+.form-control:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0,102,204,0.1); }
+.form-label { font-weight: 600; font-size: 0.88rem; color: #444; margin-bottom: 6px; }
+.summary-card { background: linear-gradient(135deg, #f0f7ff 0%, #e8f5f3 100%); border-radius: 20px; padding: 30px; position: sticky; top: 100px; }
+.summary-row { padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.07); }
+.success-card { background: #fff; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); padding: 60px 40px; text-align: center; }
+.success-icon { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #00c9a7, #0066cc); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #fff; margin: 0 auto 25px; }
+{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <div class="section-badge">Easy Booking</div>
+        <h1 class="text-white" style="font-size:3.5rem;font-weight:800;">Book Your Dream Tour</h1>
+        <p class="text-white mt-3" style="opacity:0.85;">Complete your booking in just a few simple steps</p>
+    </div>
+</section>
+<section style="padding: 70px 0; background: #f8f9fa;">
+    <div class="container">
+        {% if success %}
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="success-card">
+                    <div class="success-icon"><i class="fas fa-check"></i></div>
+                    <h2 class="fw-bold mb-2">Booking Confirmed!</h2>
+                    <p class="text-muted mb-4">Your booking has been received. Confirmation sent to <strong>{{ booking_data.email }}</strong></p>
+                    <div style="background:#f8f9fa;border-radius:16px;padding:25px;text-align:left;margin-bottom:30px;">
+                        <h6 class="fw-bold mb-3" style="color:var(--primary);">Booking Summary</h6>
+                        <div class="summary-row d-flex justify-content-between"><span class="text-muted">Booking Ref:</span><strong style="color:var(--accent);">{{ booking_data.booking_ref }}</strong></div>
+                        <div class="summary-row d-flex justify-content-between"><span class="text-muted">Guest:</span><strong>{{ booking_data.full_name }}</strong></div>
+                        <div class="summary-row d-flex justify-content-between"><span class="text-muted">Tour:</span><strong>{{ booking_data.tour }}</strong></div>
+                        <div class="summary-row d-flex justify-content-between"><span class="text-muted">Destination:</span><strong>{{ booking_data.destination }}</strong></div>
+                        <div class="summary-row d-flex justify-content-between"><span class="text-muted">Travel Date:</span><strong>{{ booking_data.travel_date }}</strong></div>
+                        <div class="summary-row d-flex justify-content-between"><span class="text-muted">Travelers:</span><strong>{{ booking_data.people }} person(s)</strong></div>
+                        <div class="summary-row d-flex justify-content-between"><span class="text-muted">Total:</span><strong style="color:var(--primary);font-size:1.2rem;">${{ booking_data.total_price }}</strong></div>
+                    </div>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a href="{% url 'home' %}" class="btn btn-primary-custom px-4"><i class="fas fa-home me-2"></i>Back to Home</a>
+                        <a href="{% url 'tours' %}" class="btn btn-outline-custom px-4">Browse More Tours</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="row g-5">
+            <div class="col-lg-8">
+                <div class="booking-form-card">
+                    <div class="booking-form-header">
+                        <h4 class="text-white fw-bold mb-1">Fill In Your Details</h4>
+                        <p class="text-white mb-0" style="opacity:0.8;font-size:0.9rem;">Fields marked with * are required</p>
+                    </div>
+                    <form method="POST" class="p-4 p-md-5">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <h6 class="fw-bold pb-2 mb-3" style="border-bottom:2px solid #eee;"><i class="fas fa-user me-2" style="color:var(--primary);"></i>Personal Information</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">First Name *</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors.0 }}</div>{% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name *</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}<div class="text-danger small">{{ form.last_name.errors.0 }}</div>{% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email *</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors.0 }}</div>{% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone *</label>
+                                    {{ form.phone }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <h6 class="fw-bold pb-2 mb-3" style="border-bottom:2px solid #eee;"><i class="fas fa-suitcase me-2" style="color:var(--primary);"></i>Tour Details</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Tour Package *</label>
+                                    {{ form.tour_package }}
+                                    {% if form.tour_package.errors %}<div class="text-danger small">{{ form.tour_package.errors.0 }}</div>{% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Guide (Optional)</label>
+                                    {{ form.guide }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Travel Date *</label>
+                                    {{ form.travel_date }}
+                                    {% if form.travel_date.errors %}<div class="text-danger small">{{ form.travel_date.errors.0 }}</div>{% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Number of Travelers *</label>
+                                    {{ form.number_of_people }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Special Requests</label>
+                                    {{ form.special_requests }}
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3" style="font-size:1.1rem;">
+                            <i class="fas fa-paper-plane me-2"></i>Confirm My Booking
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="summary-card">
+                    <h5 class="fw-bold mb-4"><i class="fas fa-receipt me-2" style="color:var(--primary);"></i>Booking Info</h5>
+                    <div class="d-flex gap-2 mb-2"><i class="fas fa-shield-alt" style="color:var(--accent);margin-top:2px;"></i><span class="small">Travel insurance included</span></div>
+                    <div class="d-flex gap-2 mb-2"><i class="fas fa-undo" style="color:var(--accent);margin-top:2px;"></i><span class="small">Free cancellation (48h before)</span></div>
+                    <div class="d-flex gap-2 mb-2"><i class="fas fa-headset" style="color:var(--accent);margin-top:2px;"></i><span class="small">24/7 customer support</span></div>
+                    <div class="d-flex gap-2"><i class="fas fa-lock" style="color:var(--accent);margin-top:2px;"></i><span class="small">Secure payment processing</span></div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

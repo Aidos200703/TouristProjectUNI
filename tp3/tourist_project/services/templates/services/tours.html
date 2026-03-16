@@ -1,0 +1,79 @@
+{% extends 'services/base.html' %}
+{% block extra_css %}
+.page-hero { padding: 140px 0 80px; background: linear-gradient(135deg, rgba(26,26,46,0.9) 0%, rgba(0,77,153,0.8) 100%), url('https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=1600') center/cover no-repeat; text-align: center; }
+.tour-card { border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; }
+.tour-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+.tour-img { height: 230px; overflow: hidden; position: relative; }
+.tour-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+.tour-card:hover .tour-img img { transform: scale(1.07); }
+.filter-pill { padding: 8px 20px; border-radius: 25px; border: 2px solid #dee2e6; background: #fff; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; text-decoration: none; color: #555; }
+.filter-pill:hover, .filter-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.sort-select { border: 2px solid #dee2e6; border-radius: 10px; padding: 8px 16px; font-weight: 600; }
+{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <div class="section-badge">Curated Experiences</div>
+        <h1 class="text-white" style="font-size:3.5rem;font-weight:800;">Tour Packages</h1>
+        <p class="text-white mt-3" style="font-size:1.15rem;opacity:0.85;">Choose from {{ tours|length }} expertly crafted adventures</p>
+    </div>
+</section>
+<section style="padding: 70px 0; background: #f8f9fa;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="?category=all&sort={{ sort_by }}" class="filter-pill {% if selected_category == 'all' %}active{% endif %}">All</a>
+                {% for cat in categories %}
+                <a href="?category={{ cat }}&sort={{ sort_by }}" class="filter-pill {% if selected_category == cat %}active{% endif %}">{{ cat|title }}</a>
+                {% endfor %}
+            </div>
+            <div>
+                <label class="text-muted small me-2">Sort by:</label>
+                <select class="sort-select" onchange="window.location='?category={{ selected_category }}&sort='+this.value">
+                    <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price</option>
+                    <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Top Rated</option>
+                    <option value="duration" {% if sort_by == 'duration' %}selected{% endif %}>Duration</option>
+                </select>
+            </div>
+        </div>
+        <div class="row g-4">
+            {% for tour in tours %}
+            <div class="col-lg-4 col-md-6">
+                <div class="tour-card">
+                    <div class="tour-img">
+                        <img src="{{ tour.destination.image_url }}" alt="{{ tour.title }}">
+                        <span class="badge-category">{{ tour.get_category_display }}</span>
+                        <span class="badge-rating"><i class="fas fa-star me-1"></i>{{ tour.destination.rating }}</span>
+                    </div>
+                    <div class="p-4">
+                        <h5 class="fw-bold mb-1">{{ tour.title }}</h5>
+                        <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1" style="color:var(--secondary);"></i>{{ tour.destination.name }}, {{ tour.destination.country.name }}</p>
+                        <p class="text-muted small mb-3">{{ tour.description|truncatewords:20 }}</p>
+                        <div class="row g-2 mb-3 text-muted small">
+                            <div class="col-4 text-center" style="border-right:1px solid #eee;"><i class="fas fa-calendar-alt d-block mb-1" style="color:var(--primary);"></i>{{ tour.duration_days }} Days</div>
+                            <div class="col-4 text-center" style="border-right:1px solid #eee;"><i class="fas fa-users d-block mb-1" style="color:var(--accent);"></i>Max {{ tour.max_group_size }}</div>
+                            <div class="col-4 text-center"><i class="fas fa-star d-block mb-1" style="color:#ffd700;"></i>{{ tour.reviews.count }} reviews</div>
+                        </div>
+                        <div class="d-flex gap-2 mb-3 flex-wrap">
+                            {% if tour.includes_hotel %}<span class="badge" style="background:rgba(0,201,167,0.1);color:#00c9a7;"><i class="fas fa-hotel me-1"></i>Hotel</span>{% endif %}
+                            {% if tour.includes_flight %}<span class="badge" style="background:rgba(0,102,204,0.1);color:#0066cc;"><i class="fas fa-plane me-1"></i>Flight</span>{% endif %}
+                            {% if tour.includes_meals %}<span class="badge" style="background:rgba(255,107,53,0.1);color:#ff6b35;"><i class="fas fa-utensils me-1"></i>Meals</span>{% endif %}
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div class="fw-bold" style="color:var(--primary);font-size:1.4rem;">${{ tour.price }}<span class="text-muted fw-normal" style="font-size:0.8rem;">/person</span></div>
+                            <a href="{% url 'booking' %}" class="btn btn-primary-custom btn-sm">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-map-marked-alt" style="font-size:3rem;color:#ccc;"></i>
+                <h5 class="mt-3 text-muted">No tours found</h5>
+                <a href="{% url 'tours' %}" class="btn btn-primary-custom mt-3">Show All Tours</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

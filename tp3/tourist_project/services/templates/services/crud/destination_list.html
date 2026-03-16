@@ -1,0 +1,56 @@
+{% extends 'services/crud/base_manage.html' %}
+
+{% block manage_content %}
+<div class="table-card">
+    <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+        <h5 class="fw-bold mb-0"><i class="fas fa-map-marker-alt me-2" style="color:var(--primary);"></i>Destinations ({{ items|length }})</h5>
+        <a href="{% url 'destination_create' %}" class="btn btn-primary-custom btn-sm">
+            <i class="fas fa-plus me-1"></i> Add Destination
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Country</th>
+                    <th>Rating</th>
+                    <th>Price/Day</th>
+                    <th>Featured</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td class="text-muted">{{ item.id }}</td>
+                    <td>
+                        {% if item.image_url %}
+                        <img src="{{ item.image_url }}" style="width:40px;height:30px;object-fit:cover;border-radius:6px;margin-right:8px;">
+                        {% endif %}
+                        <strong>{{ item.name }}</strong>
+                    </td>
+                    <td>{{ item.country }}</td>
+                    <td><span style="color:#ffd700;">★</span> {{ item.rating }}</td>
+                    <td>${{ item.price_per_day }}</td>
+                    <td>
+                        {% if item.is_featured %}
+                        <span class="badge" style="background:rgba(0,201,167,0.15);color:#00c9a7;">Yes</span>
+                        {% else %}
+                        <span class="badge" style="background:#f0f0f0;color:#999;">No</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'destination_update' item.pk %}" class="btn-action btn-edit">Edit</a>
+                        <a href="{% url 'destination_delete' item.pk %}" class="btn-action btn-del ms-1">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center text-muted py-4">No destinations found</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

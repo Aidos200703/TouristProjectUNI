@@ -1,0 +1,70 @@
+{% extends 'services/base.html' %}
+{% block extra_css %}
+.page-hero { padding: 140px 0 80px; background: linear-gradient(135deg, rgba(26,26,46,0.9) 0%, rgba(0,150,130,0.75) 100%), url('https://images.unsplash.com/photo-1508672019048-805c876b67e2?w=1600') center/cover no-repeat; text-align: center; }
+.guide-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 25px rgba(0,0,0,0.08); transition: all 0.3s ease; }
+.guide-card:hover { transform: translateY(-8px); box-shadow: 0 20px 45px rgba(0,0,0,0.15); }
+.guide-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 8px 25px rgba(0,0,0,0.15); display: block; margin: 0 auto; }
+.stat-chip { background: #f8f9fa; border-radius: 10px; padding: 10px 14px; text-align: center; }
+.lang-tag { display: inline-block; background: rgba(0,102,204,0.08); color: var(--primary); font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 12px; margin: 2px; }
+{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <div class="section-badge">Meet The Experts</div>
+        <h1 class="text-white" style="font-size:3.5rem;font-weight:800;">Our Expert Guides</h1>
+        <p class="text-white mt-3" style="font-size:1.15rem;opacity:0.85;">Passionate professionals who make every journey extraordinary</p>
+    </div>
+</section>
+<section style="padding: 80px 0; background: #f8f9fa;">
+    <div class="container">
+        <div class="row g-4">
+            {% for guide in guides %}
+            <div class="col-lg-4 col-md-6">
+                <div class="guide-card">
+                    <div style="position:relative;padding:30px 30px 0;text-align:center;">
+                        <span style="position:absolute;top:20px;right:20px;background:var(--gradient);color:#fff;font-size:0.75rem;font-weight:700;padding:4px 12px;border-radius:20px;">
+                            <i class="fas fa-check-circle me-1"></i>Certified
+                        </span>
+                        <img src="{{ guide.photo_url }}" alt="{{ guide.full_name }}" class="guide-img">
+                    </div>
+                    <div class="p-4 text-center">
+                        <h5 class="fw-bold mb-1">{{ guide.full_name }}</h5>
+                        <p class="small mb-2 fw-600" style="color:var(--accent);">{{ guide.specialization }}</p>
+                        <div class="stars mb-2">{% for i in "12345" %}★{% endfor %} <span class="text-muted">{{ guide.rating }}</span></div>
+                        <p class="text-muted small mb-4">{{ guide.bio|truncatewords:22 }}</p>
+                        <div class="row g-2 mb-4">
+                            <div class="col-6">
+                                <div class="stat-chip">
+                                    <div class="fw-bold" style="color:var(--primary);font-size:1.2rem;">{{ guide.years_experience }}+</div>
+                                    <div class="text-muted" style="font-size:0.75rem;">Years Exp.</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-chip">
+                                    <div class="fw-bold" style="color:var(--accent);font-size:1.2rem;">{{ guide.bookings.count }}+</div>
+                                    <div class="text-muted" style="font-size:0.75rem;">Tours Done</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <p class="text-muted small mb-2"><i class="fas fa-language me-1"></i>Languages:</p>
+                            {% for lang in guide.languages.split %}
+                            <span class="lang-tag">{{ lang|cut:"," }}</span>
+                            {% endfor %}
+                        </div>
+                        <a href="{% url 'booking' %}" class="btn btn-primary-custom w-100">
+                            <i class="fas fa-calendar-check me-2"></i>Book with {{ guide.full_name|truncatechars:12 }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-user-tie" style="font-size:3rem;color:#ccc;"></i>
+                <h5 class="mt-3 text-muted">No guides available</h5>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
