@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
@@ -7,6 +7,17 @@ urlpatterns = [
     path('tours/', views.tours, name='tours'),
     path('guides/', views.guides, name='guides'),
     path('booking/', views.booking, name='booking'),
+    path('weather/', views.weather_view, name='weather'),
+
+    path('register/', views.register_view, name='register'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('profile/', views.profile_view, name='profile'),
+
+    re_path(r'^destinations/(?P<pk>[0-9]+)/$', views.destination_detail, name='destination_detail'),
+    re_path(r'^tours/(?P<pk>[0-9]+)/$', views.tour_detail, name='tour_detail'),
+    re_path(r'^guides/(?P<pk>[0-9ы]+)/$', views.guide_detail, name='guide_detail'),
+    re_path(r'^search/(?P<query>[a-zA-Z0-9\-]+)/$', views.search_view, name='search'),
 
     path('manage/destinations/', views.destination_list, name='destination_list'),
     path('manage/destinations/add/', views.destination_create, name='destination_create'),

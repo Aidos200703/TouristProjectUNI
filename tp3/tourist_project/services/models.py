@@ -1,7 +1,13 @@
 from django.db import models
 
+class TimeStampedModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-class Country(models.Model):
+    class Meta:
+        abstract = True
+
+class Country(TimeStampedModel):
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=3)
     continent = models.CharField(max_length=50)
@@ -10,12 +16,12 @@ class Country(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         ordering = ['name']
         verbose_name_plural = 'Countries'
 
 
-class Destination(models.Model):
+class Destination(TimeStampedModel):
     name = models.CharField(max_length=200)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='destinations')
     description = models.TextField()
@@ -27,11 +33,11 @@ class Destination(models.Model):
     def __str__(self):
         return f"{self.name}, {self.country.name}"
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         ordering = ['-rating']
 
 
-class Guide(models.Model):
+class Guide(TimeStampedModel):
     full_name = models.CharField(max_length=200)
     photo_url = models.URLField(blank=True)
     bio = models.TextField()
@@ -44,11 +50,11 @@ class Guide(models.Model):
     def __str__(self):
         return self.full_name
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         ordering = ['-rating']
 
 
-class TourPackage(models.Model):
+class TourPackage(TimeStampedModel):
     CATEGORY_CHOICES = [
         ('adventure', 'Adventure'),
         ('cultural', 'Cultural'),
@@ -70,31 +76,29 @@ class TourPackage(models.Model):
     includes_flight = models.BooleanField(default=False)
     includes_meals = models.BooleanField(default=True)
     is_available = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         ordering = ['price']
 
 
-class Customer(models.Model):
+class Customer(TimeStampedModel):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20)
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True, related_name='customers')
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         ordering = ['last_name']
 
 
-class Booking(models.Model):
+class Booking(TimeStampedModel):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
@@ -110,7 +114,6 @@ class Booking(models.Model):
     special_requests = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     total_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
         if not self.total_price:
@@ -120,19 +123,18 @@ class Booking(models.Model):
     def __str__(self):
         return f"{self.customer} - {self.tour_package.title}"
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         ordering = ['-created_at']
 
 
-class Review(models.Model):
+class Review(TimeStampedModel):
     tour_package = models.ForeignKey(TourPackage, on_delete=models.CASCADE, related_name='reviews')
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='reviews')
     rating = models.PositiveIntegerField(default=5)
     comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.customer} - {self.tour_package.title}"
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         ordering = ['-created_at']

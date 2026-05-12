@@ -1,0 +1,585 @@
+{% extends 'services/base.html' %}
+
+{% block extra_css %}
+.api-hero {
+    padding: 120px 0 50px;
+    background: linear-gradient(135deg, rgba(26,26,46,0.95) 0%, rgba(0,77,153,0.9) 100%),
+                url('https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1600') center/cover no-repeat;
+}
+.endpoint-card {
+    background: var(--color-bg, #fff);
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s;
+}
+.endpoint-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.endpoint-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px; cursor: pointer;
+    background: #f8f9fa;
+}
+.method-badge {
+    font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
+    border-radius: 6px; letter-spacing: 0.5px; min-width: 52px; text-align: center;
+}
+.get    { background: #d1fae5; color: #065f46; }
+.post   { background: #dbeafe; color: #1e40af; }
+.put    { background: #fef3c7; color: #92400e; }
+.patch  { background: #ede9fe; color: #5b21b6; }
+.delete { background: #fee2e2; color: #991b1b; }
+.endpoint-url { font-family: monospace; font-size: 0.88rem; color: #374151; }
+.endpoint-body { padding: 20px; display: none; border-top: 1px solid #e5e7eb; }
+.endpoint-body.open { display: block; }
+.result-box {
+    background: #1e1e2e; color: #cdd6f4;
+    border-radius: 10px; padding: 16px;
+    font-family: monospace; font-size: 0.82rem;
+    max-height: 320px; overflow-y: auto;
+    white-space: pre-wrap; word-break: break-word;
+    margin-top: 12px; min-height: 60px;
+}
+.result-box.loading { color: #a6adc8; }
+.result-box.error   { color: #f38ba8; }
+.result-box.success { color: #a6e3a1; }
+.form-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.form-row input, .form-row select, .form-row textarea {
+    flex: 1; min-width: 160px;
+    border: 1.5px solid #d1d5db; border-radius: 8px;
+    padding: 8px 12px; font-size: 0.88rem; font-family: monospace;
+}
+.form-row textarea { min-height: 90px; resize: vertical; }
+.btn-send {
+    background: linear-gradient(135deg, #0066cc, #00c9a7);
+    color: #fff; border: none; border-radius: 8px;
+    padding: 9px 22px; font-weight: 600; font-size: 0.88rem; cursor: pointer;
+}
+.btn-send:hover { opacity: 0.9; }
+.tab-bar { display: flex; gap: 6px; margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn {
+    padding: 8px 18px; border-radius: 22px; border: 2px solid #e5e7eb;
+    background: #fff; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+    transition: all 0.2s;
+}
+.tab-btn.active { background: linear-gradient(135deg, #0066cc, #00c9a7); color: #fff; border-color: transparent; }
+.section-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #6b7280; margin-bottom: 10px; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.data-table th { background: #f3f4f6; padding: 10px 14px; text-align: left; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.5px; color: #374151; }
+.data-table td { padding: 10px 14px; border-bottom: 1px solid #f3f4f6; color: #374151; }
+.data-table tr:hover td { background: #f9fafb; }
+.stats-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.stat-chip { background: linear-gradient(135deg, #f0f7ff, #e8f5f3); border-radius: 12px; padding: 14px 20px; flex: 1; min-width: 130px; }
+.stat-chip .num { font-size: 1.8rem; font-weight: 800; color: #0066cc; }
+.stat-chip .lbl { font-size: 0.8rem; color: #6b7280; margin-top: 2px; }
+{% endblock %}
+
+{% block content %}
+<section class="api-hero">
+    <div class="container">
+        <div class="section-badge" style="color:#00c9a7;border-color:rgba(0,201,167,0.4);">Task 5 — API Client</div>
+        <h1 class="text-white fw-bold" style="font-size:2.8rem;">JavaScript API Client</h1>
+        <p class="text-white mt-2" style="opacity:0.8;">Live demo — retrieve & send data via REST API</p>
+    </div>
+</section>
+
+<section style="padding: 50px 0; background: #f8f9fa; min-height: 80vh;">
+    <div class="container">
+
+        <div class="tab-bar" id="tabBar">
+            <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
+            <button class="tab-btn" onclick="showTab('viewset')">ViewSet API v1</button>
+            <button class="tab-btn" onclick="showTab('apiview')">APIView v2</button>
+            <button class="tab-btn" onclick="showTab('postman')">Postman Guide</button>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="tab-dashboard">
+            <div class="stats-row" id="statsRow">
+                <div class="stat-chip"><div class="num" id="st-dest">...</div><div class="lbl">Destinations</div></div>
+                <div class="stat-chip"><div class="num" id="st-tour">...</div><div class="lbl">Tours</div></div>
+                <div class="stat-chip"><div class="num" id="st-guide">...</div><div class="lbl">Guides</div></div>
+                <div class="stat-chip"><div class="num" id="st-book">...</div><div class="lbl">Bookings</div></div>
+                <div class="stat-chip"><div class="num" id="st-cust">...</div><div class="lbl">Customers</div></div>
+                <div class="stat-chip"><div class="num" id="st-rev">...</div><div class="lbl">Reviews</div></div>
+            </div>
+
+            <div style="background:#fff;border-radius:14px;padding:24px;border:1px solid #e5e7eb;margin-bottom:20px;">
+                <div class="section-label">Destinations (from API)</div>
+                <div style="overflow-x:auto;">
+                    <table class="data-table" id="destTable">
+                        <thead><tr><th>ID</th><th>Name</th><th>Country</th><th>Rating</th><th>Price/Day</th><th>Featured</th></tr></thead>
+                        <tbody id="destBody"><tr><td colspan="6" style="color:#9ca3af;text-align:center;padding:20px;">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="background:#fff;border-radius:14px;padding:24px;border:1px solid #e5e7eb;margin-bottom:20px;">
+                <div class="section-label">Tour Packages (from API)</div>
+                <div style="overflow-x:auto;">
+                    <table class="data-table" id="tourTable">
+                        <thead><tr><th>ID</th><th>Title</th><th>Destination</th><th>Category</th><th>Duration</th><th>Price</th></tr></thead>
+                        <tbody id="tourBody"><tr><td colspan="6" style="color:#9ca3af;text-align:center;padding:20px;">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="background:#fff;border-radius:14px;padding:24px;border:1px solid #e5e7eb;">
+                <div class="section-label">Recent Reviews (from API)</div>
+                <div style="overflow-x:auto;">
+                    <table class="data-table" id="revTable">
+                        <thead><tr><th>ID</th><th>Customer</th><th>Tour</th><th>Rating</th><th>Comment</th></tr></thead>
+                        <tbody id="revBody"><tr><td colspan="5" style="color:#9ca3af;text-align:center;padding:20px;">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEWSET API v1 TAB -->
+        <div id="tab-viewset" style="display:none;">
+            <div class="section-label">ViewSet API — /api/v1/ (Router generated endpoints)</div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggle(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/v1/destinations/</span>
+                    <span style="color:#6b7280;font-size:0.82rem;margin-left:auto;">List all destinations</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="form-row">
+                        <input id="v1-dest-search" placeholder="search=santorini" style="max-width:220px;">
+                        <input id="v1-dest-order" placeholder="ordering=-rating" style="max-width:180px;">
+                    </div>
+                    <button class="btn-send" onclick="sendRequest('GET','v1-dest-result',()=>{
+                        let url='/api/v1/destinations/?format=json';
+                        const s=document.getElementById('v1-dest-search').value;
+                        const o=document.getElementById('v1-dest-order').value;
+                        if(s) url+='&search='+s;
+                        if(o) url+='&ordering='+o;
+                        return url;
+                    })">Send Request</button>
+                    <div class="result-box" id="v1-dest-result">Response will appear here...</div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggle(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/v1/destinations/featured/</span>
+                    <span style="color:#6b7280;font-size:0.82rem;margin-left:auto;">Custom action — featured only</span>
+                </div>
+                <div class="endpoint-body">
+                    <button class="btn-send" onclick="sendRequest('GET','v1-feat-result',()=>'/api/v1/destinations/featured/?format=json')">Send Request</button>
+                    <div class="result-box" id="v1-feat-result">Response will appear here...</div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggle(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/v1/tours/</span>
+                    <span style="color:#6b7280;font-size:0.82rem;margin-left:auto;">List all tours</span>
+                </div>
+                <div class="endpoint-body">
+                    <button class="btn-send" onclick="sendRequest('GET','v1-tours-result',()=>'/api/v1/tours/?format=json')">Send Request</button>
+                    <div class="result-box" id="v1-tours-result">Response will appear here...</div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggle(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/v1/guides/available/</span>
+                    <span style="color:#6b7280;font-size:0.82rem;margin-left:auto;">Available guides only</span>
+                </div>
+                <div class="endpoint-body">
+                    <button class="btn-send" onclick="sendRequest('GET','v1-guides-result',()=>'/api/v1/guides/available/?format=json')">Send Request</button>
+                    <div class="result-box" id="v1-guides-result">Response will appear here...</div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggle(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/v1/destinations/</span>
+                    <span style="color:#6b7280;font-size:0.82rem;margin-left:auto;">Create new destination</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="form-row">
+                        <input id="p-name" placeholder="name" value="New City">
+                        <input id="p-country" placeholder="country (id)" value="1" type="number">
+                        <input id="p-price" placeholder="price_per_day" value="150" type="number">
+                    </div>
+                    <div class="form-row">
+                        <input id="p-rating" placeholder="rating" value="4.5" type="number" step="0.1">
+                        <input id="p-img" placeholder="image_url (optional)">
+                        <input id="p-desc" placeholder="description" value="A beautiful city.">
+                    </div>
+                    <button class="btn-send" onclick="postDestination()">Send POST</button>
+                    <div class="result-box" id="v1-post-result">Response will appear here...</div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggle(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/v1/bookings/by_status/</span>
+                    <span style="color:#6b7280;font-size:0.82rem;margin-left:auto;">Filter bookings by status</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="form-row">
+                        <select id="v1-status-sel">
+                            <option value="pending">pending</option>
+                            <option value="confirmed">confirmed</option>
+                            <option value="cancelled">cancelled</option>
+                            <option value="completed">completed</option>
+                        </select>
+                    </div>
+                    <button class="btn-send" onclick="sendRequest('GET','v1-status-result',()=>
+                        '/api/v1/bookings/by_status/?status='+document.getElementById('v1-status-sel').value+'&format=json'
+                    )">Send Request</button>
+                    <div class="result-box" id="v1-status-result">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APIVIEW v2 TAB -->
+        <div id="tab-apiview" style="display:none;">
+            <div class="section-label">APIView — /api/v2/ (Manual CRUD endpoints)</div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggle(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/v2/tours/</span>
+                    <span style="color:#6b7280;font-size:0.82rem;margin-left:auto;">List all tours</span>
+                </div>
+                <div class="endpoint-body">
+                    <button class="btn-send" onclick="sendRequest('GET','v2-tours-result',()=>'/api/v2/tours/')">Send Request</button>
+                    <div class="result-box" id="v2-tours-result">Response will appear here...</div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggle(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/v2/tours/{id}/</span>
+                    <span style="color:#6b7280;font-size:0.82rem;margin-left:auto;">Get single tour by ID</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="form-row">
+                        <input id="v2-tour-id" type="number" placeholder="Tour ID" value="1" style="max-width:120px;">
+                    </div>
+                    <button class="btn-send" onclick="sendRequest('GET','v2-tour-det',()=>
+                        '/api/v2/tours/'+document.getElementById('v2-tour-id').value+'/'
+                    )">Send Request</button>
+                    <div class="result-box" id="v2-tour-det">Response will appear here...</div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggle(this)">
+                    <span class="method-badge patch">PATCH</span>
+                    <span class="endpoint-url">/api/v2/tours/{id}/</span>
+                    <span style="color:#6b7280;font-size:0.82rem;margin-left:auto;">Partial update tour</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="form-row">
+                        <input id="v2-patch-id" type="number" placeholder="Tour ID" value="1" style="max-width:120px;">
+                        <input id="v2-patch-price" type="number" placeholder="New price" value="2999">
+                    </div>
+                    <button class="btn-send" onclick="patchTour()">Send PATCH</button>
+                    <div class="result-box" id="v2-patch-result">Response will appear here...</div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggle(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/v2/guides/</span>
+                    <span style="color:#6b7280;font-size:0.82rem;margin-left:auto;">List all guides</span>
+                </div>
+                <div class="endpoint-body">
+                    <button class="btn-send" onclick="sendRequest('GET','v2-guides-result',()=>'/api/v2/guides/')">Send Request</button>
+                    <div class="result-box" id="v2-guides-result">Response will appear here...</div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggle(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/v2/reviews/</span>
+                    <span style="color:#6b7280;font-size:0.82rem;margin-left:auto;">List all reviews</span>
+                </div>
+                <div class="endpoint-body">
+                    <button class="btn-send" onclick="sendRequest('GET','v2-reviews-result',()=>'/api/v2/reviews/')">Send Request</button>
+                    <div class="result-box" id="v2-reviews-result">Response will appear here...</div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggle(this)">
+                    <span class="method-badge delete">DELETE</span>
+                    <span class="endpoint-url">/api/v2/reviews/{id}/</span>
+                    <span style="color:#6b7280;font-size:0.82rem;margin-left:auto;">Delete a review</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="form-row">
+                        <input id="v2-del-id" type="number" placeholder="Review ID" value="1" style="max-width:140px;">
+                    </div>
+                    <button class="btn-send" style="background:linear-gradient(135deg,#dc3545,#c82333);" onclick="deleteReview()">Send DELETE</button>
+                    <div class="result-box" id="v2-del-result">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- POSTMAN GUIDE TAB -->
+        <div id="tab-postman" style="display:none;">
+            <div style="background:#fff;border-radius:14px;padding:28px;border:1px solid #e5e7eb;">
+                <h5 class="fw-bold mb-4" style="color:#1a1a2e;">Postman Guide — Tourist Services API</h5>
+
+                <div style="margin-bottom:28px;">
+                    <div class="section-label">Base URLs</div>
+                    <div style="background:#1e1e2e;border-radius:10px;padding:16px;font-family:monospace;font-size:0.88rem;color:#cdd6f4;">
+                        ViewSet API:  http://127.0.0.1:8000/api/v1/<br>
+                        APIView API:  http://127.0.0.1:8000/api/v2/
+                    </div>
+                </div>
+
+                <div style="margin-bottom:28px;">
+                    <div class="section-label">GET — Retrieve all destinations</div>
+                    <div style="background:#1e1e2e;border-radius:10px;padding:16px;font-family:monospace;font-size:0.88rem;color:#a6e3a1;">
+                        GET http://127.0.0.1:8000/api/v1/destinations/<br>
+                        GET http://127.0.0.1:8000/api/v1/destinations/?search=santorini<br>
+                        GET http://127.0.0.1:8000/api/v1/destinations/?ordering=-rating<br>
+                        GET http://127.0.0.1:8000/api/v1/destinations/featured/
+                    </div>
+                </div>
+
+                <div style="margin-bottom:28px;">
+                    <div class="section-label">POST — Create new destination</div>
+                    <div style="background:#1e1e2e;border-radius:10px;padding:16px;font-family:monospace;font-size:0.88rem;color:#89b4fa;">
+                        POST http://127.0.0.1:8000/api/v1/destinations/<br>
+                        Content-Type: application/json<br><br>
+                        {<br>
+                        &nbsp;&nbsp;"name": "Almaty",<br>
+                        &nbsp;&nbsp;"country": 1,<br>
+                        &nbsp;&nbsp;"description": "Beautiful city in Kazakhstan",<br>
+                        &nbsp;&nbsp;"price_per_day": 80,<br>
+                        &nbsp;&nbsp;"rating": 4.6,<br>
+                        &nbsp;&nbsp;"is_featured": true<br>
+                        }
+                    </div>
+                </div>
+
+                <div style="margin-bottom:28px;">
+                    <div class="section-label">PUT — Full update tour</div>
+                    <div style="background:#1e1e2e;border-radius:10px;padding:16px;font-family:monospace;font-size:0.88rem;color:#f9e2af;">
+                        PUT http://127.0.0.1:8000/api/v2/tours/1/<br>
+                        Content-Type: application/json<br><br>
+                        {<br>
+                        &nbsp;&nbsp;"title": "Updated Tour Name",<br>
+                        &nbsp;&nbsp;"destination": 1,<br>
+                        &nbsp;&nbsp;"category": "beach",<br>
+                        &nbsp;&nbsp;"description": "Updated description",<br>
+                        &nbsp;&nbsp;"duration_days": 10,<br>
+                        &nbsp;&nbsp;"price": 2999,<br>
+                        &nbsp;&nbsp;"max_group_size": 15,<br>
+                        &nbsp;&nbsp;"includes_hotel": true,<br>
+                        &nbsp;&nbsp;"includes_flight": false,<br>
+                        &nbsp;&nbsp;"includes_meals": true,<br>
+                        &nbsp;&nbsp;"is_available": true<br>
+                        }
+                    </div>
+                </div>
+
+                <div style="margin-bottom:28px;">
+                    <div class="section-label">PATCH — Partial update (price only)</div>
+                    <div style="background:#1e1e2e;border-radius:10px;padding:16px;font-family:monospace;font-size:0.88rem;color:#cba6f7;">
+                        PATCH http://127.0.0.1:8000/api/v2/tours/1/<br>
+                        Content-Type: application/json<br><br>
+                        {"price": 1999}
+                    </div>
+                </div>
+
+                <div style="margin-bottom:28px;">
+                    <div class="section-label">DELETE — Remove a review</div>
+                    <div style="background:#1e1e2e;border-radius:10px;padding:16px;font-family:monospace;font-size:0.88rem;color:#f38ba8;">
+                        DELETE http://127.0.0.1:8000/api/v2/reviews/1/<br><br>
+                        Response: 204 No Content
+                    </div>
+                </div>
+
+                <div>
+                    <div class="section-label">All available endpoints</div>
+                    <div style="background:#1e1e2e;border-radius:10px;padding:16px;font-family:monospace;font-size:0.82rem;color:#cdd6f4;line-height:2;">
+                        /api/v1/countries/         GET, POST<br>
+                        /api/v1/countries/{id}/    GET, PUT, PATCH, DELETE<br>
+                        /api/v1/destinations/      GET, POST<br>
+                        /api/v1/destinations/featured/  GET (custom action)<br>
+                        /api/v1/tours/             GET, POST<br>
+                        /api/v1/tours/available/   GET (custom action)<br>
+                        /api/v1/tours/{id}/reviews/ GET (custom action)<br>
+                        /api/v1/guides/            GET, POST<br>
+                        /api/v1/guides/available/  GET (custom action)<br>
+                        /api/v1/customers/         GET, POST<br>
+                        /api/v1/bookings/          GET, POST<br>
+                        /api/v1/bookings/by_status/?status=pending  GET<br>
+                        /api/v1/reviews/           GET, POST<br>
+                        /api/v2/countries/         GET, POST<br>
+                        /api/v2/countries/{id}/    GET, PUT, PATCH, DELETE<br>
+                        /api/v2/destinations/      GET, POST<br>
+                        /api/v2/destinations/{id}/ GET, PUT, PATCH, DELETE<br>
+                        /api/v2/guides/            GET, POST<br>
+                        /api/v2/guides/{id}/       GET, PUT, PATCH, DELETE<br>
+                        /api/v2/tours/             GET, POST<br>
+                        /api/v2/tours/{id}/        GET, PUT, PATCH, DELETE<br>
+                        /api/v2/customers/         GET, POST<br>
+                        /api/v2/customers/{id}/    GET, PUT, PATCH, DELETE<br>
+                        /api/v2/bookings/          GET, POST<br>
+                        /api/v2/bookings/{id}/     GET, PUT, PATCH, DELETE<br>
+                        /api/v2/reviews/           GET, POST<br>
+                        /api/v2/reviews/{id}/      GET, PUT, PATCH, DELETE
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showTab(name) {
+    document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+    document.getElementById('tab-' + name).style.display = 'block';
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+function toggle(header) {
+    const body = header.nextElementSibling;
+    body.classList.toggle('open');
+}
+
+async function sendRequest(method, resultId, urlFn, body) {
+    const box = document.getElementById(resultId);
+    box.className = 'result-box loading';
+    box.textContent = 'Sending request...';
+    try {
+        const url = typeof urlFn === 'function' ? urlFn() : urlFn;
+        const opts = { method, headers: { 'Content-Type': 'application/json' } };
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(url, opts);
+        const text = await res.text();
+        let parsed;
+        try { parsed = JSON.parse(text); } catch { parsed = text; }
+        box.className = 'result-box ' + (res.ok ? 'success' : 'error');
+        box.textContent = 'Status: ' + res.status + ' ' + res.statusText + '\n\n' +
+            (typeof parsed === 'object' ? JSON.stringify(parsed, null, 2) : parsed);
+    } catch (e) {
+        box.className = 'result-box error';
+        box.textContent = 'Error: ' + e.message;
+    }
+}
+
+async function postDestination() {
+    const body = {
+        name: document.getElementById('p-name').value,
+        country: parseInt(document.getElementById('p-country').value),
+        description: document.getElementById('p-desc').value,
+        price_per_day: parseFloat(document.getElementById('p-price').value),
+        rating: parseFloat(document.getElementById('p-rating').value),
+        image_url: document.getElementById('p-img').value,
+        is_featured: false
+    };
+    await sendRequest('POST', 'v1-post-result', () => '/api/v1/destinations/', body);
+}
+
+async function patchTour() {
+    const id = document.getElementById('v2-patch-id').value;
+    const price = parseFloat(document.getElementById('v2-patch-price').value);
+    await sendRequest('PATCH', 'v2-patch-result', () => '/api/v2/tours/' + id + '/', { price });
+}
+
+async function deleteReview() {
+    const id = document.getElementById('v2-del-id').value;
+    const box = document.getElementById('v2-del-result');
+    box.className = 'result-box loading';
+    box.textContent = 'Sending DELETE request...';
+    try {
+        const res = await fetch('/api/v2/reviews/' + id + '/', { method: 'DELETE' });
+        box.className = 'result-box ' + (res.ok ? 'success' : 'error');
+        box.textContent = res.status === 204
+            ? 'Status: 204 No Content\n\nReview deleted successfully.'
+            : 'Status: ' + res.status + '\n' + await res.text();
+    } catch (e) {
+        box.className = 'result-box error';
+        box.textContent = 'Error: ' + e.message;
+    }
+}
+
+async function loadDashboard() {
+    try {
+        const [dests, tours, guides, bookings, customers, reviews] = await Promise.all([
+            fetch('/api/v1/destinations/?format=json&page_size=100').then(r => r.json()),
+            fetch('/api/v1/tours/?format=json&page_size=100').then(r => r.json()),
+            fetch('/api/v1/guides/?format=json&page_size=100').then(r => r.json()),
+            fetch('/api/v1/bookings/?format=json&page_size=100').then(r => r.json()),
+            fetch('/api/v1/customers/?format=json&page_size=100').then(r => r.json()),
+            fetch('/api/v1/reviews/?format=json&page_size=100').then(r => r.json()),
+        ]);
+
+        const count = d => d.count !== undefined ? d.count : (Array.isArray(d) ? d.length : (d.results ? d.results.length : '?'));
+        const items = d => d.results || (Array.isArray(d) ? d : []);
+
+        document.getElementById('st-dest').textContent = count(dests);
+        document.getElementById('st-tour').textContent = count(tours);
+        document.getElementById('st-guide').textContent = count(guides);
+        document.getElementById('st-book').textContent = count(bookings);
+        document.getElementById('st-cust').textContent = count(customers);
+        document.getElementById('st-rev').textContent = count(reviews);
+
+        const destItems = items(dests);
+        document.getElementById('destBody').innerHTML = destItems.length
+            ? destItems.map(d => `<tr>
+                <td>${d.id}</td>
+                <td><strong>${d.name}</strong></td>
+                <td>${d.country_name || d.country}</td>
+                <td><span style="color:#f59e0b;">★</span> ${d.rating}</td>
+                <td>$${d.price_per_day}</td>
+                <td>${d.is_featured ? '<span style="color:#059669;font-weight:600;">Yes</span>' : '<span style="color:#9ca3af;">No</span>'}</td>
+              </tr>`).join('')
+            : '<tr><td colspan="6" style="color:#9ca3af;text-align:center;padding:20px;">No data</td></tr>';
+
+        const tourItems = items(tours);
+        document.getElementById('tourBody').innerHTML = tourItems.length
+            ? tourItems.map(t => `<tr>
+                <td>${t.id}</td>
+                <td><strong>${t.title}</strong></td>
+                <td>${t.destination_name || t.destination}</td>
+                <td><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:4px;font-size:0.78rem;">${t.category_display || t.category}</span></td>
+                <td>${t.duration_days} days</td>
+                <td>$${t.price}</td>
+              </tr>`).join('')
+            : '<tr><td colspan="6" style="color:#9ca3af;text-align:center;padding:20px;">No data</td></tr>';
+
+        const revItems = items(reviews);
+        document.getElementById('revBody').innerHTML = revItems.length
+            ? revItems.slice(0, 5).map(r => `<tr>
+                <td>${r.id}</td>
+                <td>${r.customer_name || r.customer}</td>
+                <td>${r.tour_title || r.tour_package}</td>
+                <td>${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</td>
+                <td style="color:#6b7280;font-size:0.82rem;">${(r.comment || '').substring(0, 60)}...</td>
+              </tr>`).join('')
+            : '<tr><td colspan="5" style="color:#9ca3af;text-align:center;padding:20px;">No data</td></tr>';
+
+    } catch (e) {
+        console.error('Dashboard load error:', e);
+    }
+}
+
+loadDashboard();
+</script>
+{% endblock %}

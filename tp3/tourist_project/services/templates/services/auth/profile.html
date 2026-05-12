@@ -1,0 +1,79 @@
+{% extends 'services/base.html' %}
+{% block extra_css %}
+.profile-hero { padding: 130px 0 60px; background: var(--gradient); }
+.profile-card { background: #fff; border-radius: 20px; box-shadow: 0 4px 25px rgba(0,0,0,0.1); padding: 30px; }
+.avatar-big { width: 100px; height: 100px; border-radius: 50%; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #fff; font-weight: 700; margin: 0 auto; }
+{% endblock %}
+{% block content %}
+<section class="profile-hero">
+    <div class="container">
+        <h1 class="text-white fw-bold">My Profile</h1>
+        <p class="text-white opacity-75">Manage your TravelWise account</p>
+    </div>
+</section>
+<section style="padding:50px 0;background:#f8f9fa;min-height:60vh;">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="profile-card text-center">
+                    <div class="avatar-big mb-3">{{ user.first_name|first|default:user.username|first|upper }}</div>
+                    <h4 class="fw-bold">{{ user.first_name }} {{ user.last_name }}</h4>
+                    <p class="text-muted">@{{ user.username }}</p>
+                    <p class="text-muted small">{{ user.email }}</p>
+                    {% if user.is_staff %}
+                    <span class="badge" style="background:var(--gradient);color:#fff;padding:6px 16px;border-radius:20px;">Admin</span>
+                    {% endif %}
+                    <hr>
+                    <p class="text-muted small mb-1">Member since</p>
+                    <p class="fw-bold">{{ user.date_joined|date:"d M Y" }}</p>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="profile-card mb-4">
+                    <h5 class="fw-bold mb-4"><i class="fas fa-tachometer-alt me-2" style="color:var(--primary);"></i>Quick Actions</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <a href="{% url 'destination_list' %}" class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none" style="background:#f0f7ff;color:#0066cc;">
+                                <i class="fas fa-map-marker-alt fa-lg"></i>
+                                <div><div class="fw-bold">Manage Destinations</div><div class="small opacity-75">Add, edit, delete</div></div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'tour_list' %}" class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none" style="background:#e8f5f3;color:#00c9a7;">
+                                <i class="fas fa-suitcase fa-lg"></i>
+                                <div><div class="fw-bold">Manage Tours</div><div class="small opacity-75">Add, edit, delete</div></div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'booking_list' %}" class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none" style="background:#fff8e1;color:#ffc107;">
+                                <i class="fas fa-calendar-check fa-lg"></i>
+                                <div><div class="fw-bold">View Bookings</div><div class="small opacity-75">Manage bookings</div></div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'weather' %}" class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none" style="background:#f3e5f5;color:#9c27b0;">
+                                <i class="fas fa-cloud-sun fa-lg"></i>
+                                <div><div class="fw-bold">Travel Weather</div><div class="small opacity-75">External API data</div></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-card">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-info-circle me-2" style="color:var(--primary);"></i>Account Details</h5>
+                    <table class="table table-borderless">
+                        <tr><td class="text-muted fw-600">Full Name</td><td class="fw-bold">{{ user.first_name }} {{ user.last_name }}</td></tr>
+                        <tr><td class="text-muted fw-600">Username</td><td>{{ user.username }}</td></tr>
+                        <tr><td class="text-muted fw-600">Email</td><td>{{ user.email }}</td></tr>
+                        <tr><td class="text-muted fw-600">Joined</td><td>{{ user.date_joined|date:"d M Y" }}</td></tr>
+                        <tr><td class="text-muted fw-600">Last Login</td><td>{{ user.last_login|date:"d M Y, H:i" }}</td></tr>
+                        <tr><td class="text-muted fw-600">Status</td><td><span style="color:#00c9a7;font-weight:600;">Active</span></td></tr>
+                    </table>
+                    <a href="{% url 'logout' %}" class="btn" style="background:#fee2e2;color:#dc3545;border-radius:10px;font-weight:600;padding:8px 20px;">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

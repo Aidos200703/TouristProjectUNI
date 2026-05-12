@@ -1,0 +1,56 @@
+{% extends 'services/base.html' %}
+{% block extra_css %}
+.auth-section { min-height: 100vh; display: flex; align-items: center; background: linear-gradient(135deg, #f0f7ff 0%, #e8f5f3 100%); padding-top: 80px; }
+.auth-card { background: #fff; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.12); overflow: hidden; }
+.auth-header { background: var(--gradient); padding: 36px; text-align: center; }
+.form-control { border: 2px solid #eee; border-radius: 12px; padding: 12px 16px; font-size: 0.9rem; transition: border-color 0.3s; }
+.form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0,102,204,0.1); }
+.form-label { font-weight: 600; font-size: 0.88rem; color: #444; margin-bottom: 6px; }
+.errorlist { list-style: none; padding: 0; margin: 4px 0 0; }
+.errorlist li { color: #dc3545; font-size: 0.82rem; }
+{% endblock %}
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <div style="width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.8rem;color:#fff;">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                        <h3 class="text-white fw-bold mb-1">Welcome Back</h3>
+                        <p class="text-white mb-0" style="opacity:0.8;">Sign in to your account</p>
+                    </div>
+                    <div class="p-4 p-md-5">
+                        <form method="POST" novalidate>
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Username *</label>
+                                {{ form.username }}
+                                {% if form.username.errors %}<ul class="errorlist">{% for e in form.username.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password *</label>
+                                {{ form.password }}
+                                {% if form.password.errors %}<ul class="errorlist">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                            </div>
+                            {% if form.non_field_errors %}
+                            <div class="alert alert-danger" style="border-radius:10px;font-size:0.88rem;">
+                                <i class="fas fa-exclamation-circle me-2"></i>{{ form.non_field_errors.0 }}
+                            </div>
+                            {% endif %}
+                            <button type="submit" class="btn btn-primary-custom w-100 py-3 mt-2" style="font-size:1rem;">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </button>
+                        </form>
+                        <div class="text-center mt-4">
+                            <p class="text-muted">Don't have an account? <a href="{% url 'register' %}" style="color:var(--primary);font-weight:600;">Register</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

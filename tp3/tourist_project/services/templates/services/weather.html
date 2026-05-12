@@ -1,0 +1,163 @@
+{% extends 'services/base.html' %}
+{% block extra_css %}
+.weather-hero { padding: 130px 0 60px; background: linear-gradient(135deg, rgba(26,26,46,0.92) 0%, rgba(0,77,153,0.85) 100%), url('https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1600') center/cover no-repeat; text-align: center; }
+.weather-card { background: linear-gradient(135deg, #0066cc, #00c9a7); border-radius: 24px; padding: 36px; color: #fff; text-align: center; }
+.temp-big { font-size: 5rem; font-weight: 800; line-height: 1; }
+.weather-detail { background: rgba(255,255,255,0.15); border-radius: 12px; padding: 14px; text-align: center; }
+.info-card { background: #fff; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 28px; }
+.city-btn { padding: 8px 20px; border-radius: 25px; border: 2px solid #dee2e6; background: #fff; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; text-decoration: none; color: #555; display: inline-block; margin: 4px; }
+.city-btn:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
+{% endblock %}
+{% block content %}
+<section class="weather-hero">
+    <div class="container">
+        <div class="section-badge">Task 4 — External API</div>
+        <h1 class="text-white fw-bold" style="font-size:3rem;">Travel Weather & Country Info</h1>
+        <p class="text-white mt-2 opacity-75">Real-time data from wttr.in & restcountries.com APIs</p>
+        <form method="GET" class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+            <input type="text" name="city" value="{{ city }}" placeholder="Enter city or country..."
+                   style="padding:12px 20px;border-radius:30px;border:none;font-size:1rem;min-width:280px;outline:none;">
+            <button type="submit" class="btn btn-primary-custom px-4">
+                <i class="fas fa-search me-2"></i>Search
+            </button>
+        </form>
+        <div class="mt-3">
+            {% for c in popular_cities %}
+            <a href="?city={{ c }}" class="city-btn">{{ c }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section style="padding:60px 0;background:#f8f9fa;min-height:60vh;">
+    <div class="container">
+        {% if error_msg %}
+        <div class="alert alert-warning text-center mb-4">
+            <i class="fas fa-exclamation-triangle me-2"></i>{{ error_msg }}
+        </div>
+        {% endif %}
+
+        <div class="row g-4">
+            {% if weather_data %}
+            <div class="col-lg-5">
+                <div class="weather-card">
+                    <p class="fw-bold mb-1 opacity-75" style="font-size:0.9rem;letter-spacing:1px;text-transform:uppercase;">
+                        <i class="fas fa-map-marker-alt me-1"></i>{{ weather_data.city }}
+                    </p>
+                    <div class="temp-big">{{ weather_data.temp_c }}°C</div>
+                    <p style="font-size:1.2rem;opacity:0.9;">{{ weather_data.description }}</p>
+                    <p class="opacity-75">Feels like {{ weather_data.feels_like }}°C &nbsp;·&nbsp; {{ weather_data.temp_f }}°F</p>
+                    <div class="row g-3 mt-3">
+                        <div class="col-4">
+                            <div class="weather-detail">
+                                <i class="fas fa-tint fa-lg mb-2 d-block"></i>
+                                <div class="fw-bold">{{ weather_data.humidity }}%</div>
+                                <div style="font-size:0.75rem;opacity:0.8;">Humidity</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="weather-detail">
+                                <i class="fas fa-wind fa-lg mb-2 d-block"></i>
+                                <div class="fw-bold">{{ weather_data.wind_speed }}</div>
+                                <div style="font-size:0.75rem;opacity:0.8;">km/h Wind</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="weather-detail">
+                                <i class="fas fa-sun fa-lg mb-2 d-block"></i>
+                                <div class="fw-bold">{{ weather_data.uv_index }}</div>
+                                <div style="font-size:0.75rem;opacity:0.8;">UV Index</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3" style="background:rgba(255,255,255,0.1);border-radius:12px;font-size:0.82rem;opacity:0.85;">
+                        <i class="fas fa-code me-1"></i>Source: <strong>wttr.in API</strong> (free, no key needed)
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if country_data %}
+            <div class="col-lg-7">
+                <div class="info-card">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        {% if country_data.flag %}
+                        <img src="{{ country_data.flag }}" alt="flag" style="height:50px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+                        {% endif %}
+                        <div>
+                            <h4 class="fw-bold mb-0">{{ country_data.name }}</h4>
+                            <p class="text-muted mb-0">{{ country_data.region }}</p>
+                        </div>
+                        <div class="ms-auto">
+                            <span style="background:rgba(0,201,167,0.1);color:#00c9a7;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:700;">
+                                <i class="fas fa-globe me-1"></i>restcountries.com API
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div style="background:#f8f9fa;border-radius:12px;padding:16px;">
+                                <div class="text-muted small">Capital City</div>
+                                <div class="fw-bold" style="font-size:1.1rem;">{{ country_data.capital }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div style="background:#f8f9fa;border-radius:12px;padding:16px;">
+                                <div class="text-muted small">Population</div>
+                                <div class="fw-bold" style="font-size:1.1rem;">{{ country_data.population }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div style="background:#f8f9fa;border-radius:12px;padding:16px;">
+                                <div class="text-muted small">Currency</div>
+                                <div class="fw-bold" style="font-size:1.1rem;">{{ country_data.currency }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div style="background:#f8f9fa;border-radius:12px;padding:16px;">
+                                <div class="text-muted small">Official Language</div>
+                                <div class="fw-bold" style="font-size:1.1rem;">{{ country_data.language }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3" style="background:#f0f7ff;border-radius:12px;">
+                        <p class="text-muted small mb-0">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Data retrieved from <strong>restcountries.com</strong> — free open API, no authentication needed.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if not weather_data and not country_data and not error_msg %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-cloud-sun" style="font-size:4rem;color:#ccc;"></i>
+                <h5 class="mt-3 text-muted">Search for a city or country above</h5>
+                <p class="text-muted">Get real-time weather and country information</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="mt-5 p-4" style="background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+            <h6 class="fw-bold mb-3"><i class="fas fa-plug me-2" style="color:var(--primary);"></i>External APIs Used in This Project</h6>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div style="background:#f0f7ff;border-radius:12px;padding:16px;">
+                        <div class="fw-bold" style="color:var(--primary);">wttr.in Weather API</div>
+                        <div class="text-muted small">URL: https://wttr.in/{city}?format=j1</div>
+                        <div class="text-muted small">Free · No API key · JSON format</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div style="background:#e8f5f3;border-radius:12px;padding:16px;">
+                        <div class="fw-bold" style="color:#00c9a7;">RestCountries API</div>
+                        <div class="text-muted small">URL: https://restcountries.com/v3.1/name/{name}</div>
+                        <div class="text-muted small">Free · No API key · JSON format</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
