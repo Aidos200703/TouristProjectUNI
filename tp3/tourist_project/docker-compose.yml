@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: travelwise_db
+    environment:
+      POSTGRES_DB: travelwise
+      POSTGRES_USER: travelwise_user
+      POSTGRES_PASSWORD: travelwise_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U travelwise_user -d travelwise"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: travelwise_web
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      - DJANGO_SECRET_KEY=django-insecure-tourist-services-2024
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
