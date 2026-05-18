@@ -55,9 +55,13 @@
         <a class="navbar-brand" href="{% url 'home' %}">
             <i class="fas fa-globe-americas me-2" style="-webkit-text-fill-color:#00c9a7;"></i>TravelWise
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <nav class="navbar navbar-dark bg-dark">
+            <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
-        </button>
+            </button>
+        </nav>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-center gap-1">
                 <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
